@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <algorithm>
 
 int map[26] ;
 using namespace std;
@@ -47,6 +48,7 @@ int main()
 {
     memset(map,0,26) ;
     string ciphertext;
+    string plaintext ;
     string exst_words;
     string fre_chars;
     string tem;
@@ -62,6 +64,13 @@ int main()
     //extraction of words
     vector<string> string_out = getWords(exst_words,exst_words.length()) ;
 
+    //frequency mapping
+    int size = ciphertext.size() ;
+    for(int i=0;i<size;i++){
+        map[ciphertext[i]-'A']++ ;
+    }
+
     
+
     return 0;
 }
