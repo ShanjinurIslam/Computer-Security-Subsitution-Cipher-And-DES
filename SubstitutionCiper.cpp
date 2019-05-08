@@ -70,7 +70,30 @@ int main()
         map[ciphertext[i]-'A']++ ;
     }
 
+    //extraction of character
     
+    vector<char> max_chars ;
+    while(max_chars.size()<char_out.size()){
+        int index = -1 ;
+        int max = -1 ;
+        for(int i=0;i<26;i++){
+            if(map[i]>max){
+                max = map[i] ;
+                index = i ;
+            }
+        }
+        max_chars.push_back(((char)('A'+index))) ;
+        map[index] = -1 ;
+    }
+
+    /*
+    for(int i=0;i<max_chars.size();i++){
+        cout<<char_out[i]<<" "<<max_chars[i]<<endl ;
+    }
+    */
+
+   
+
 
     return 0;
 }
