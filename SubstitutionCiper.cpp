@@ -6,6 +6,7 @@
 #include <algorithm>
 
 int map[26] ;
+char final_map[26] ;
 using namespace std;
 
 vector<char> getChars(const char s[], int n)
@@ -47,6 +48,7 @@ vector<string> getWords(const string s, int n)
 int main()
 {
     memset(map,0,26) ;
+    memset(final_map,0,26) ;
     string ciphertext;
     string plaintext ;
     string exst_words;
@@ -86,14 +88,27 @@ int main()
         map[index] = -1 ;
     }
 
-    /*
     for(int i=0;i<max_chars.size();i++){
-        cout<<char_out[i]<<" "<<max_chars[i]<<endl ;
+        final_map[(int)(char_out[i]-'a')] = max_chars[i] ;
     }
-    */
 
-   
+    plaintext = ciphertext ;
 
+    for(int i=0;i<plaintext.size();i++){
+        for(int j=0;j<max_chars.size();j++){
+            if(plaintext[i]==max_chars[j]){
+                plaintext[i] = char_out[j] ;
+            }
+        }
+    }
+
+    
+
+    /*cout<<plaintext<<endl ;
+
+    for(int i=0;i<26;i++){
+        cout<<((char)('a'+i))<<" "<<final_map[i]<<endl ;
+    }*/
 
     return 0;
 }
