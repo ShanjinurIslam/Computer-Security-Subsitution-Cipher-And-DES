@@ -45,6 +45,26 @@ vector<string> getWords(const string s, int n)
     return out;
 }
 
+vector<pair<char,int>> getIndexes(vector<char> chars,string word){
+    int i = 0 ;
+    vector<pair<char,int>> maps ;
+    while(i<chars.size()){
+
+        pair<char,int> apair ;
+        apair.first = 0 ;
+        apair.second = 0 ;
+        for(int j=0;j<word.length();j++){
+            if(chars[i]==word[j]){
+                apair.first = chars[i] ;
+                apair.second++ ;
+            }
+        }
+        maps.push_back(apair) ;
+    }
+
+    return maps ;
+}
+
 int main()
 {
     memset(map,0,26) ;
@@ -64,7 +84,7 @@ int main()
     vector<char> char_out = getChars(fre_chars.c_str(), (int)fre_chars.length());
 
     //extraction of words
-    vector<string> string_out = getWords(exst_words,exst_words.length()) ;
+    vector<string> word_out = getWords(exst_words,exst_words.length()) ;
 
     //frequency mapping
     int size = ciphertext.size() ;
@@ -102,7 +122,10 @@ int main()
         }
     }
 
-    
+    for(int i=0;i<word_out.size();i++){
+        getIndexes(char_out,word_out[i]) ;
+        
+    }
 
     /*cout<<plaintext<<endl ;
 
