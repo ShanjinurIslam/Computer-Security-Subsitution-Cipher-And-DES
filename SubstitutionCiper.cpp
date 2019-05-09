@@ -193,7 +193,7 @@ int main()
     final_map['p'-'a'] = 'R' ;
     plaintext = getReplaced(plaintext,'R','p') ;
     final_map['f'-'a'] = 'J' ;
-    plaintext = getReplaced(plaintext,'U','f') ;
+    plaintext = getReplaced(plaintext,'J','f') ;
     final_map['c'-'a'] = 'N' ;
     plaintext = getReplaced(plaintext,'N','c') ;
     final_map['j'-'a'] = 'V' ;
