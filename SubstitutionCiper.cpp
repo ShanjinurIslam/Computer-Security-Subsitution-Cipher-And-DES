@@ -176,7 +176,7 @@ int main()
                 if(tem!=word_out[i]) continue ;
             }
             
-            if(flag){
+            if(flag && !flag2){
                 for(int n=0;n<tem.size();n++){
                     if(final_map[word_out[i].at(n)-'a']==0) final_map[word_out[i].at(n)-'a'] = tem[n] ;
                     plaintext = getReplaced(plaintext,tem[n],word_out[i].at(n)) ;
@@ -184,6 +184,20 @@ int main()
             }
         }
     }
+
+    //guessing after the initial output
+    final_map['w'-'a'] = 'W' ;
+    plaintext = getReplaced(plaintext,'W','w') ;
+    final_map['u'-'a'] = 'B' ;
+    plaintext = getReplaced(plaintext,'B','u') ;
+    final_map['p'-'a'] = 'R' ;
+    plaintext = getReplaced(plaintext,'R','p') ;
+    final_map['f'-'a'] = 'J' ;
+    plaintext = getReplaced(plaintext,'U','f') ;
+    final_map['c'-'a'] = 'N' ;
+    plaintext = getReplaced(plaintext,'N','c') ;
+    final_map['j'-'a'] = 'V' ;
+    plaintext = getReplaced(plaintext,'V','j') ;
 
     cout<<"Cipertext to Plaintext:\n"<<endl ;
     cout<<plaintext<<endl ;
