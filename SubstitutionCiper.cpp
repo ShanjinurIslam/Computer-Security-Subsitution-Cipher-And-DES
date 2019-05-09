@@ -75,8 +75,20 @@ string getReplaced(string input,char a,char b){
     return input ;
 }
 
+string plainTociper(string s,char map[]){
+    int i = 0 ;
+    string m ;
+    while(i<s.size()){
+        if(map[s[i]-'a']!=0 && (s[i]>='a' && s[i]<='z')) m+= map[s[i]-'a'] ;
+        else m+= s[i] ;
+        i++ ;
+    }
+    return m ;
+}
+
 int main()
 {
+    freopen("output.txt","w",stdout) ;
     memset(map,0,26) ;
     memset(final_map,0,26) ;
     string ciphertext;
@@ -163,7 +175,7 @@ int main()
             if(flag2){
                 if(tem!=word_out[i]) continue ;
             }
-
+            
             if(flag){
                 for(int n=0;n<tem.size();n++){
                     if(final_map[word_out[i].at(n)-'a']==0) final_map[word_out[i].at(n)-'a'] = tem[n] ;
@@ -173,16 +185,27 @@ int main()
         }
     }
 
+    cout<<"Cipertext to Plaintext:\n"<<endl ;
     cout<<plaintext<<endl ;
+    cout<<endl ;
+
+    cout<<"Alphabet Mapping:\n"<<endl ;
 
     for(int i=0;i<26;i++){
         cout<<((char)('a'+i))<<"\t" ;
     }
-    cout<<endl; 
+    cout<<endl ;
     for(int i=0;i<26;i++){
         cout<<final_map[i]<<"\t" ;
     }
-    cout<<endl ;
+    cout<<endl<<endl ;
 
+    cout<<"Plaintext to Ciphertext:\n"<<endl ;
+    string m = plainTociper(plaintext,final_map) ;
+    cout<<m<<endl<<endl ;
+
+    cout<<"Accuracy:\n" ;
+    float acc  = (100.0*(ciphertext.length()-strcmp(ciphertext.c_str(),m.c_str())))/(1.0*ciphertext.length()) ;
+    cout<<acc<<"%"<<endl ;
     return 0;
 }
