@@ -45,13 +45,13 @@ vector<string> getWords(const string s, int n)
     return out;
 }
 
-vector<pair<char,int>> getIndexes(vector<char> chars,string word){
+vector<pair<char,int> > getIndexes(vector<char> chars,string word){
     int i = 0 ;
-    vector<pair<char,int>> maps ;
+    vector<pair<char,int> > maps ;
     while(i<chars.size()){
 
         pair<char,int> apair ;
-        apair.first = 0 ;
+        apair.first = chars[i] ;
         apair.second = 0 ;
         for(int j=0;j<word.length();j++){
             if(chars[i]==word[j]){
@@ -60,9 +60,19 @@ vector<pair<char,int>> getIndexes(vector<char> chars,string word){
             }
         }
         maps.push_back(apair) ;
+        i++ ;
     }
 
     return maps ;
+}
+
+string getReplaced(string input,char a,char b){
+    for(int i=0;i<input.size();i++){
+        if(input[i]==a){
+            input[i] = b ;
+        }
+    }
+    return input ;
 }
 
 int main()
@@ -123,15 +133,56 @@ int main()
     }
 
     for(int i=0;i<word_out.size();i++){
-        getIndexes(char_out,word_out[i]) ;
-        
+        vector<pair<char,int> > indexes = getIndexes(char_out,word_out[i]) ; //correct
+
+        for(int j=0;j<=plaintext.size()-word_out[i].size();j++){
+            string tem = plaintext.substr(j,word_out[i].size()) ;
+            bool flag = true ;
+            for(int k=0;k<indexes.size();k++){
+                int count = 0 ;
+                int count2 = 0 ;
+                for(int m=0;m<tem.size();m++){
+                    if(tem[m]==indexes[k].first && tem[m]==word_out[i].at(m)){
+                        count++ ;
+                    }
+                    if(tem[m]==indexes[k].first){
+                        count2++ ;
+                    }
+                }
+                if(count!=indexes[k].second || count2!=count) flag = false ;
+                if(flag==false) break ;
+            }
+
+            bool flag2 = true ;
+            for(int f=0;f<tem.size();f++){
+                if(tem[f]>='a' && tem[f]<='z'){
+                }
+                else flag2 = false ;
+            }
+
+            if(flag2){
+                if(tem!=word_out[i]) continue ;
+            }
+
+            if(flag){
+                for(int n=0;n<tem.size();n++){
+                    if(final_map[word_out[i].at(n)-'a']==0) final_map[word_out[i].at(n)-'a'] = tem[n] ;
+                    plaintext = getReplaced(plaintext,tem[n],word_out[i].at(n)) ;
+                }
+            }
+        }
     }
 
-    /*cout<<plaintext<<endl ;
+    cout<<plaintext<<endl ;
 
     for(int i=0;i<26;i++){
-        cout<<((char)('a'+i))<<" "<<final_map[i]<<endl ;
-    }*/
+        cout<<((char)('a'+i))<<"\t" ;
+    }
+    cout<<endl; 
+    for(int i=0;i<26;i++){
+        cout<<final_map[i]<<"\t" ;
+    }
+    cout<<endl ;
 
     return 0;
 }
