@@ -43,13 +43,18 @@ int *generateBitForm(string s)
         count++;
     }
 
-    printBlock(a, 64);
-
     return a;
 }
 
 int *generateBlock(string s, int array[], int size)
 {
+    //padding
+    if (s.length() < 8)
+    {
+        while (s.length() < 8)
+            s += "~";
+    }
+
     int *a = generateBitForm(s);
 
     int *final_out = new int[size];
@@ -69,6 +74,23 @@ void printBlock(int a[], int n)
             cout << " ";
     }
     cout << endl;
+}
+
+string getCipherText(int block[], int blocksize, int key[], int keysize)
+{
+    int partition_size = blocksize / 2;
+    int L[partition_size];
+    int R[partition_size];
+
+    for(int i=0;i<partition_size;i++){
+        L[i] = block[i] ;
+        R[i] = block[partition_size+i] ;
+    }
+
+    
+
+
+    return "Doing";
 }
 
 int main()
@@ -93,6 +115,7 @@ int main()
     for (int i = 0; i < number_of_blocks; i++)
     {
         blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
+        string cipher_text = getCipherText(blocks[i], 64, keyBlock, 56);
     }
 
     return 0;
