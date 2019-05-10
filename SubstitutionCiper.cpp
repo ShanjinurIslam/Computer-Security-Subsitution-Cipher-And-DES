@@ -68,7 +68,7 @@ vector<pair<char,int> > getIndexes(vector<char> chars,string word){
 
 string getReplaced(string input,char a,char b){
     for(int i=0;i<input.size();i++){
-        if(input[i]==a){
+        if(input[i]==a && a>='A' && a<='Z'){
             input[i] = b ;
         }
     }
@@ -188,14 +188,8 @@ int main()
     //guessing after the initial output
     final_map['w'-'a'] = 'W' ;
     plaintext = getReplaced(plaintext,'W','w') ;
-    final_map['u'-'a'] = 'B' ;
-    plaintext = getReplaced(plaintext,'B','u') ;
-    final_map['p'-'a'] = 'R' ;
-    plaintext = getReplaced(plaintext,'R','p') ;
     final_map['f'-'a'] = 'J' ;
     plaintext = getReplaced(plaintext,'J','f') ;
-    final_map['c'-'a'] = 'N' ;
-    plaintext = getReplaced(plaintext,'N','c') ;
     final_map['j'-'a'] = 'V' ;
     plaintext = getReplaced(plaintext,'V','j') ;
 
