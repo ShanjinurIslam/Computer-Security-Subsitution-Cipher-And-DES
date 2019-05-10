@@ -126,30 +126,42 @@ string getCipherText(int block[], int blocksize, int key[], int keysize)
     }
 
     //start of iteration
-    for (int i = 0; i < 26; i++)
+    for (int m = 0; m < 16; m++)
     {
         int keyPartition = keysize / 2;
         int KL[partition_size];
         int KR[partition_size];
 
         //half of keyblock and shifting
-        for (int i = 0; i < keyPartition - SHIFT[i]; i++)
-        {
-            KL[i + SHIFT[i]] = key[i];
-            KR[keyPartition + i + SHIFT[i]] = key[keyPartition + i];
-        }
-
-        for (int i = 0; i < SHIFT[i]; i++)
-        {
-            KL[i] = 0;
-            KR[i] = 0;
-        }
-
-        //after shifting then merging
         for (int i = 0; i < keyPartition; i++)
         {
-            key[i] = KL[i];
-            key[keyPartition + i] = KR[i];
+            KL[i] = key[i];
+            KR[i] = key[keyPartition + i];
+        }
+
+        for (int i = 0; i < m; i++)
+        {
+            int temp = KL[i], j;
+            for (j = 0; j < keyPartition - 1; j++)
+                KL[j] = KL[j + 1];
+
+            KL[j] = temp;
+        }
+
+        for (int i = 0; i < m; i++)
+        {
+            int temp = KR[i], j;
+            for (j = 0; j < keyPartition - 1; j++)
+                KR[j] = KR[j + 1];
+
+            KR[j] = temp;
+        }
+
+        int *int_key = new int[56];
+        for (int i = 0; i < keyPartition; i++)
+        {
+            int_key[i] = KL[i];
+            int_key[keyPartition + i] = KR[i];
         }
 
         int *key_round = new int[48];
@@ -239,14 +251,14 @@ int main()
     {
         blocks[i] = new int[64];
     }
-    string cipher_text ;
+    string cipher_text;
     for (int i = 0; i < number_of_blocks; i++)
     {
         blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
         cipher_text += getCipherText(blocks[i], 64, keyBlock, 56);
     }
 
-    cout<<cipher_text<<endl ;
+    cout << cipher_text << endl;
 
     return 0;
 }
