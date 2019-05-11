@@ -1,9 +1,12 @@
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <cstdio>
 
 using namespace std;
 
 void printBlock(int a[], int n);
+vector<int *> keys ;
 
 int PI[64] = {58, 50, 42, 34, 26, 18, 10, 2,
               60, 52, 44, 36, 28, 20, 12, 4,
@@ -113,63 +116,62 @@ void printBlock(int a[], int n)
     cout << endl;
 }
 
-string getCipherText(int block[], int blocksize, int key[], int keysize)
+string getCipherText(int block[], int key[])
 {
-    int partition_size = blocksize / 2;
-    int L[partition_size];
-    int R[partition_size];
+    int L[32];
+    int R[32];
 
-    for (int i = 0; i < partition_size; i++)
+    for (int i = 0; i < 32; i++)
     {
         L[i] = block[i];
-        R[i] = block[partition_size + i];
+        R[i] = block[32 + i];
     }
-
     //start of iteration
     for (int m = 0; m < 16; m++)
     {
-        int keyPartition = keysize / 2;
-        int KL[partition_size];
-        int KR[partition_size];
+        int KL[28];
+        int KR[28];
 
-        //half of keyblock and shifting
-        for (int i = 0; i < keyPartition; i++)
+        for (int i = 0; i < 28; i++)
         {
             KL[i] = key[i];
-            KR[i] = key[keyPartition + i];
+            KR[i] = key[28 + i];
         }
 
-        for (int i = 0; i < m; i++)
+        int shift = SHIFT[m];
+
+        for (int i = 0; i < shift; i++)
         {
             int temp = KL[i], j;
-            for (j = 0; j < keyPartition - 1; j++)
+            for (j = 0; j < 27; j++)
                 KL[j] = KL[j + 1];
 
             KL[j] = temp;
         }
-
-        for (int i = 0; i < m; i++)
+        for (int i = 0; i < shift; i++)
         {
             int temp = KR[i], j;
-            for (j = 0; j < keyPartition - 1; j++)
+            for (j = 0; j < 27; j++)
                 KR[j] = KR[j + 1];
 
             KR[j] = temp;
         }
 
-        int *int_key = new int[56];
-        for (int i = 0; i < keyPartition; i++)
+        int *initial_key = new int[56];
+
+        for (int i = 0; i < 28; i++)
         {
-            int_key[i] = KL[i];
-            int_key[keyPartition + i] = KR[i];
+            initial_key[i] = KL[i];
+            initial_key[28 + i] = KR[i];
         }
+
+        keys.push_back(initial_key) ;
 
         int *key_round = new int[48];
 
-        //generate 48 bits from 56 bits
         for (int i = 0; i < 48; i++)
         {
-            key_round[i] = key[CP_2[i] - 1];
+            key_round[i] = initial_key[CP_2[i] - 1];
         }
 
         int *e = new int[48];
@@ -197,23 +199,23 @@ string getCipherText(int block[], int blocksize, int key[], int keysize)
 
         for (int i = 0; i < 32; i++)
         {
-            final_result[i] = result[P[i] - 1];
+            final_result[i] = result[P[i] - 1] xor L[i];
         }
 
-        for (int i = 0; i < partition_size; i++)
+        for (int i = 0; i < 32; i++)
         {
             L[i] = R[i];
             R[i] = final_result[i];
         }
     }
 
-    for (int i = 0; i < partition_size; i++)
+    for (int i = 0; i < 32; i++)
     {
         block[i] = R[i];
-        block[partition_size + i] = L[i];
+        block[32 + i] = L[i];
     }
 
-    for (int i = 0; i < blocksize; i++)
+    for (int i = 0; i < 64; i++)
     {
         block[i] = block[PI_1[i] - 1];
     }
@@ -227,9 +229,86 @@ string getCipherText(int block[], int blocksize, int key[], int keysize)
             c = c << 1;
             c += block[j];
         }
-        output[i] = (char)c;
+        output += ((char)c) ;
+    }
+    return output;
+}
+
+string getPlainText(int block[], vector<int *> all_keys){
+    int L[32];
+    int R[32];
+
+    for (int i = 0; i < 32; i++)
+    {
+        L[i] = block[i];
+        R[i] = block[32 + i];
     }
 
+    for(int m=15;m>=0;m--){
+        int *key_round = new int[48];
+
+        for (int i = 0; i < 48; i++)
+        {
+            key_round[i] = all_keys[m][CP_2[i] - 1];
+        }
+
+        int *e = new int[48];
+
+        for (int i = 0; i < 48; i++)
+        {
+            e[i] = R[E[i] - 1];
+        }
+
+        int *result_xor = new int[48];
+
+        for (int i = 0; i < 48; i++)
+        {
+            result_xor[i] = key_round[i] xor e[i];
+        }
+
+        int *result = new int[32];
+
+        for (int i = 0; i < 32; i++)
+        {
+            result[i] = result_xor[PI_2[i] - 1];
+        }
+
+        int *final_result = new int[32];
+
+        for (int i = 0; i < 32; i++)
+        {
+            final_result[i] = result[P[i] - 1] xor L[i];
+        }
+
+        for (int i = 0; i < 32; i++)
+        {
+            L[i] = R[i];
+            R[i] = final_result[i];
+        }
+    }
+
+    for (int i = 0; i < 32; i++)
+    {
+        block[i] = R[i];
+        block[32 + i] = L[i];
+    }
+
+    for (int i = 0; i < 64; i++)
+    {
+        block[i] = block[PI_1[i] - 1];
+    }
+
+    string output;
+    for (int i = 0; i < 8; ++i)
+    {
+        int c = 0;
+        for (int j = i * 8; j < (i + 1) * 8; ++j)
+        {
+            c = c << 1;
+            c += block[j];
+        }
+        output += ((char)c) ;
+    }
     return output;
 }
 
@@ -255,10 +334,26 @@ int main()
     for (int i = 0; i < number_of_blocks; i++)
     {
         blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
-        cipher_text += getCipherText(blocks[i], 64, keyBlock, 56);
+        cipher_text += getCipherText(blocks[i], keyBlock);
     }
 
-    cout << cipher_text << endl;
+    cout<<cipher_text.length()<<endl ;
+    for(int i=0;i<cipher_text.length();i++){
+        printf("%d ",cipher_text[i]) ;
+    }
+    cout<<endl ;
+
+    string d_plaintext;
+    for (int i = 0; i < number_of_blocks; i++)
+    {
+        blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
+        d_plaintext += getPlainText(blocks[i], keys);
+    }
+
+    cout<<endl ;
+    for(int i=0;i<d_plaintext.length();i++){
+        printf("%d ",d_plaintext[i]) ;
+    }
 
     return 0;
 }
