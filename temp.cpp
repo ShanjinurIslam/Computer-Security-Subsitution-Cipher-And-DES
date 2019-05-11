@@ -6,7 +6,6 @@
 using namespace std;
 
 void printBlock(int a[], int n);
-vector<int *> keys ;
 
 int PI[64] = {58, 50, 42, 34, 26, 18, 10, 2,
               60, 52, 44, 36, 28, 20, 12, 4,
@@ -63,6 +62,17 @@ int PI_1[64] = {40, 8, 48, 16, 56, 24, 64, 32,
                 34, 2, 42, 10, 50, 18, 58, 26,
                 33, 1, 41, 9, 49, 17, 57, 25};
 
+void printBlock(int a[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        cout << a[i];
+        if ((i + 1) % 8 == 0)
+            cout << " ";
+    }
+    cout << endl;
+}
+
 int *generateBitForm(string s)
 {
     int count = 0;
@@ -82,21 +92,11 @@ int *generateBitForm(string s)
         output = output >> 1;
         count++;
     }
-
     return a;
 }
 
-int *generateBlock(string s, int array[], int size)
+int *generateBlock(int  *a, int array[], int size)
 {
-    //padding
-    if (s.length() < 8)
-    {
-        while (s.length() < 8)
-            s += "~";
-    }
-
-    int *a = generateBitForm(s);
-
     int *final_out = new int[size];
     for (int i = 0; i < size; i++)
     {
@@ -105,252 +105,20 @@ int *generateBlock(string s, int array[], int size)
     return final_out;
 }
 
-void printBlock(int a[], int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        cout << a[i];
-        if ((i + 1) % 8 == 0)
-            cout << " ";
-    }
-    cout << endl;
-}
-
-string getCipherText(int block[], int key[])
-{
-    int L[32];
-    int R[32];
-
-    for (int i = 0; i < 32; i++)
-    {
-        L[i] = block[i];
-        R[i] = block[32 + i];
-    }
-    //start of iteration
-    for (int m = 0; m < 16; m++)
-    {
-        int KL[28];
-        int KR[28];
-
-        for (int i = 0; i < 28; i++)
-        {
-            KL[i] = key[i];
-            KR[i] = key[28 + i];
-        }
-
-        int shift = SHIFT[m];
-
-        for (int i = 0; i < shift; i++)
-        {
-            int temp = KL[i], j;
-            for (j = 0; j < 27; j++)
-                KL[j] = KL[j + 1];
-
-            KL[j] = temp;
-        }
-        for (int i = 0; i < shift; i++)
-        {
-            int temp = KR[i], j;
-            for (j = 0; j < 27; j++)
-                KR[j] = KR[j + 1];
-
-            KR[j] = temp;
-        }
-
-        int *initial_key = new int[56];
-
-        for (int i = 0; i < 28; i++)
-        {
-            initial_key[i] = KL[i];
-            initial_key[28 + i] = KR[i];
-        }
-
-        keys.push_back(initial_key) ;
-
-        int *key_round = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            key_round[i] = initial_key[CP_2[i] - 1];
-        }
-
-        int *e = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            e[i] = R[E[i] - 1];
-        }
-
-        int *result_xor = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            result_xor[i] = key_round[i] xor e[i];
-        }
-
-        int *result = new int[32];
-
-        for (int i = 0; i < 32; i++)
-        {
-            result[i] = result_xor[PI_2[i] - 1];
-        }
-
-        int *final_result = new int[32];
-
-        for (int i = 0; i < 32; i++)
-        {
-            final_result[i] = result[P[i] - 1] xor L[i];
-        }
-
-        for (int i = 0; i < 32; i++)
-        {
-            L[i] = R[i];
-            R[i] = final_result[i];
-        }
-
-        printBlock(L,32) ;
-        printBlock(R,32) ;
-        cout<<endl ;
-    }
-
-    for (int i = 0; i < 32; i++)
-    {
-        block[i] = R[i];
-        block[32 + i] = L[i];
-    }
-
-    for (int i = 0; i < 64; i++)
-    {
-        block[i] = block[PI_1[i] - 1];
-    }
-
-    string output;
-    for (int i = 0; i < 8; ++i)
-    {
-        int c = 0;
-        for (int j = i * 8; j < (i + 1) * 8; ++j)
-        {
-            c = c << 1;
-            c += block[j];
-        }
-        output += ((char)c) ;
-    }
-    return output;
-}
-
-string getPlainText(int block[], vector<int *> all_keys){
-    int L[32];
-    int R[32];
-
-    for (int i = 0; i < 32; i++)
-    {
-        L[i] = block[i];
-        R[i] = block[32 + i];
-    }
-
-    for(int m=15;m>=0;m--){
-        int *key_round = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            key_round[i] = all_keys[m][CP_2[i] - 1];
-        }
-
-        int *e = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            e[i] = R[E[i] - 1];
-        }
-
-        int *result_xor = new int[48];
-
-        for (int i = 0; i < 48; i++)
-        {
-            result_xor[i] = key_round[i] xor e[i];
-        }
-
-        int *result = new int[32];
-
-        for (int i = 0; i < 32; i++)
-        {
-            result[i] = result_xor[PI_2[i] - 1];
-        }
-
-        int *final_result = new int[32];
-
-        for (int i = 0; i < 32; i++)
-        {
-            final_result[i] = result[P[i] - 1] xor L[i];
-        }
-
-        for (int i = 0; i < 32; i++)
-        {
-            L[i] = R[i];
-            R[i] = final_result[i];
-        }
-
-        printBlock(L,32) ;
-        printBlock(R,32) ;
-        cout<<endl ;
-    }
-
-    for (int i = 0; i < 32; i++)
-    {
-        block[i] = R[i];
-        block[32 + i] = L[i];
-    }
-
-    for (int i = 0; i < 64; i++)
-    {
-        block[i] = block[PI_1[i] - 1];
-    }
-
-    string output;
-    for (int i = 0; i < 8; ++i)
-    {
-        int c = 0;
-        for (int j = i * 8; j < (i + 1) * 8; ++j)
-        {
-            c = c << 1;
-            c += block[j];
-        }
-        output += ((char)c) ;
-    }
-    return output;
-}
-
-int main()
-{
-    freopen("out.txt","w",stdout) ;
-    string plaintext;
-    string key;
-    getline(cin, plaintext);
-    getline(cin, key);
-    int number_of_blocks = ceil(1.0 * plaintext.length() / 8.0);
-
-    int *blocks[number_of_blocks];
-
-    int *keyBlock = new int[56];
-    keyBlock = generateBlock(key, CP_1, 56);
-
-    for (int i = 0; i < number_of_blocks; i++)
-    {
-        blocks[i] = new int[64];
-    }
-    string cipher_text;
-    for (int i = 0; i < number_of_blocks; i++)
-    {
-        blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
-        cipher_text += getCipherText(blocks[i], keyBlock);
-    }
-
-    string d_plaintext;
-    for (int i = 0; i < number_of_blocks; i++)
-    {
-        blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
-        d_plaintext += getPlainText(blocks[i], keys);
-    }
-
-    return 0;
+int main(){
+    string s ;
+    s = "12345678" ;
+    int *letter = generateBitForm(s) ;
+    printBlock(letter,64) ;
+    cout<<endl ;
+    int *a = generateBlock(letter,PI,64) ;
+    printBlock(a,64) ;
+    a = generateBlock(a,PI_1,64) ;
+    printBlock(a,64) ;
+    a = generateBlock(a,PI,64) ;
+    printBlock(a,64) ;
+    a = generateBlock(a,PI_1,64) ;
+    cout<<endl ;
+    printBlock(a,64) ;
+    return 0 ;
 }

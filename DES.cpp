@@ -86,12 +86,8 @@ int *generateBitForm(string s)
     return a;
 }
 
-int *generateBlock(string s, int array[], int size)
+int *generateBlock(int  *a, int array[], int size)
 {
-    int *a = generateBitForm(s);
-    cout << "Bit form" << endl;
-    printBlock(a, 64);
-
     int *final_out = new int[size];
     for (int i = 0; i < size; i++)
     {
@@ -226,18 +222,10 @@ int *getCipherText(int block[], int key[])
     cout << "Block after swap" << endl;
     printBlock(block, 64);
 
-    /*for (int i = 0; i < 64; i++)
-    {
-        block[i] = block[PI_1[i] - 1];
-    }
-
-    cout << "Block after inverse permutation and final encpytion output: " << endl;
-    printBlock(block, 64);*/
-
     return block;
 }
 
-string getPlainText(int block[], vector<int *> all_keys)
+int* getPlainText(int block[], vector<int *> all_keys)
 {
     cout << "In decryption" << endl;
     cout << endl;
@@ -315,15 +303,7 @@ string getPlainText(int block[], vector<int *> all_keys)
     cout << "Block after swap" << endl;
     printBlock(block, 64);
 
-    /*for (int i = 0; i < 64; i++)
-    {
-        block[i] = block[PI_1[i] - 1];
-    }
-
-    cout << "Block after inverse permutation and final decryption output: " << endl;
-    printBlock(block, 64);*/
-
-    return "";
+    return block ;
 }
 
 int main()
@@ -338,7 +318,7 @@ int main()
     int *blocks[number_of_blocks];
 
     int *keyBlock = new int[56];
-    keyBlock = generateBlock(key, CP_1, 56);
+    keyBlock = generateBlock(generateBitForm(key), CP_1, 56);
 
     for (int i = 0; i < number_of_blocks; i++)
     {
@@ -347,23 +327,22 @@ int main()
     int *cipher_text;
     for (int i = 0; i < 1; i++)
     {
-        //blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
-        cout << endl;
         blocks[i] = generateBitForm(plaintext.substr(i * 8, 8)) ;
+        printBlock(blocks[i],64) ;
+        cout<<endl ;
+        blocks[i] = generateBlock(blocks[i],PI,64) ;
         cipher_text = getCipherText(blocks[i], keyBlock);
+        cipher_text = generateBlock(cipher_text,PI_1,64) ;
     }
-
-    /*int *final_out = new int[64];
-    for (int i = 0; i < 64; i++)
-    {
-        final_out[i] = cipher_text[PI[i] - 1];
-    }*/
-
+    int *plain; 
     for (int i = 0; i < 1; i++)
     {
-        //blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
-        getPlainText(cipher_text, keys);
+        cipher_text = generateBlock(cipher_text,PI,64) ;
+        plain = getPlainText(cipher_text, keys);
+        plain = generateBlock(plain,PI_1,64) ;
     }
+
+    printBlock(plain,64) ;
 
     return 0;
 }
