@@ -96,6 +96,26 @@ int *generateBlock(int  *a, int array[], int size)
     return final_out;
 }
 
+string generateString(int *a,int size){
+    char *s = new char[8] ;
+    vector<int> bits ;
+    int count = 0 ;
+    for(int i=1;i<=size;i++){
+        bits.push_back(a[i-1]) ;
+        if(i%8==0){
+            char c =0 ;
+            for(int j=0;j<bits.size();j++){
+                c += pow(2,j)*bits[j] ;
+            }
+            s[count++] = c ;
+            bits.clear() ;
+        }
+    }
+
+    string v(s) ;
+    return v ;
+}
+
 void printBlock(int a[], int n)
 {
     for (int i = 0; i < n; i++)
@@ -109,8 +129,6 @@ void printBlock(int a[], int n)
 
 int *getCipherText(int block[], int key[])
 {
-    cout << "Block after initial permutation" << endl;
-    printBlock(block, 64);
 
     int L[32];
     int R[32];
@@ -121,10 +139,6 @@ int *getCipherText(int block[], int key[])
         R[i] = block[32 + i];
     }
 
-    cout << "L and R block before iteration" << endl;
-    printBlock(L, 32);
-    printBlock(R, 32);
-    cout << endl;
     //start of iteration
     for (int m = 0; m < 16; m++)
     {
@@ -206,11 +220,6 @@ int *getCipherText(int block[], int key[])
             L[i] = R[i];
             R[i] = final_result[i];
         }
-
-        cout << "L and R block in iteration" << endl;
-        printBlock(L, 32);
-        printBlock(R, 32);
-        cout << endl;
     }
 
     for (int i = 0; i < 32; i++)
@@ -219,18 +228,11 @@ int *getCipherText(int block[], int key[])
         block[32 + i] = L[i];
     }
 
-    cout << "Block after swap" << endl;
-    printBlock(block, 64);
-
     return block;
 }
 
 int* getPlainText(int block[], vector<int *> all_keys)
 {
-    cout << "In decryption" << endl;
-    cout << endl;
-    cout << "Block after initial permutation" << endl;
-    printBlock(block, 64);
     int L[32];
     int R[32];
 
@@ -239,11 +241,6 @@ int* getPlainText(int block[], vector<int *> all_keys)
         L[i] = block[i];
         R[i] = block[32 + i];
     }
-
-    cout << "L and R block before iteration" << endl;
-    printBlock(L, 32);
-    printBlock(R, 32);
-    cout << endl;
 
     for (int m = 15; m >= 0; m--)
     {
@@ -287,11 +284,6 @@ int* getPlainText(int block[], vector<int *> all_keys)
             L[i] = R[i];
             R[i] = final_result[i];
         }
-
-        cout << "L and R block in iteration" << endl;
-        printBlock(L, 32);
-        printBlock(R, 32);
-        cout << endl;
     }
 
     for (int i = 0; i < 32; i++)
@@ -299,9 +291,6 @@ int* getPlainText(int block[], vector<int *> all_keys)
         block[i] = R[i];
         block[32 + i] = L[i];
     }
-
-    cout << "Block after swap" << endl;
-    printBlock(block, 64);
 
     return block ;
 }
@@ -324,25 +313,33 @@ int main()
     {
         blocks[i] = new int[64];
     }
-    int *cipher_text;
-    for (int i = 0; i < 1; i++)
+    int *cipher_text[number_of_blocks];
+
+    string c_text ;
+    for (int i = 0; i < number_of_blocks; i++)
     {
         blocks[i] = generateBitForm(plaintext.substr(i * 8, 8)) ;
-        printBlock(blocks[i],64) ;
-        cout<<endl ;
         blocks[i] = generateBlock(blocks[i],PI,64) ;
-        cipher_text = getCipherText(blocks[i], keyBlock);
-        cipher_text = generateBlock(cipher_text,PI_1,64) ;
-    }
-    int *plain; 
-    for (int i = 0; i < 1; i++)
-    {
-        cipher_text = generateBlock(cipher_text,PI,64) ;
-        plain = getPlainText(cipher_text, keys);
-        plain = generateBlock(plain,PI_1,64) ;
+        cipher_text[i] = getCipherText(blocks[i], keyBlock);
+        cipher_text[i] = generateBlock(cipher_text[i],PI_1,64) ;
+        c_text += generateString(cipher_text[i],64).substr(0,8) ;
     }
 
-    printBlock(plain,64) ;
+    cout<<c_text<<endl ;
+
+
+    int *plain[number_of_blocks]; 
+    string text ;
+
+    for (int i = 0; i < number_of_blocks; i++)
+    {
+        cipher_text[i] = generateBlock(cipher_text[i],PI,64) ;
+        plain[i] = getPlainText(cipher_text[i], keys);
+        plain[i] = generateBlock(plain[i],PI_1,64) ;
+        text += generateString(plain[i],64).substr(0,8) ;
+    }
+
+    cout<<text<<endl ;
 
     return 0;
 }
