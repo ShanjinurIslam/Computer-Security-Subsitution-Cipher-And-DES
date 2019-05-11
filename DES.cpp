@@ -6,16 +6,17 @@
 using namespace std;
 
 void printBlock(int a[], int n);
-vector<int *> keys ;
+vector<int *> keys;
 
-int PI[64] = {58, 50, 42, 34, 26, 18, 10, 2,
-              60, 52, 44, 36, 28, 20, 12, 4,
-              62, 54, 46, 38, 30, 22, 14, 6,
-              64, 56, 48, 40, 32, 24, 16, 8,
-              57, 49, 41, 33, 25, 17, 9, 1,
-              59, 51, 43, 35, 27, 19, 11, 3,
-              61, 53, 45, 37, 29, 21, 13, 5,
-              63, 55, 47, 39, 31, 23, 15, 7};
+int PI[64] =
+    {58, 50, 42, 34, 26, 18, 10, 2,
+     60, 52, 44, 36, 28, 20, 12, 4,
+     62, 54, 46, 38, 30, 22, 14, 6,
+     64, 56, 48, 40, 32, 24, 16, 8,
+     57, 49, 41, 33, 25, 17, 9, 1,
+     59, 51, 43, 35, 27, 19, 11, 3,
+     61, 53, 45, 37, 29, 21, 13, 5,
+     63, 55, 47, 39, 31, 23, 15, 7};
 
 int CP_1[56] = {57, 49, 41, 33, 25, 17, 9,
                 1, 58, 50, 42, 34, 26, 18,
@@ -82,20 +83,14 @@ int *generateBitForm(string s)
         output = output >> 1;
         count++;
     }
-
     return a;
 }
 
 int *generateBlock(string s, int array[], int size)
 {
-    //padding
-    if (s.length() < 8)
-    {
-        while (s.length() < 8)
-            s += "~";
-    }
-
     int *a = generateBitForm(s);
+    cout << "Bit form" << endl;
+    printBlock(a, 64);
 
     int *final_out = new int[size];
     for (int i = 0; i < size; i++)
@@ -116,8 +111,11 @@ void printBlock(int a[], int n)
     cout << endl;
 }
 
-string getCipherText(int block[], int key[])
+int *getCipherText(int block[], int key[])
 {
+    cout << "Block after initial permutation" << endl;
+    printBlock(block, 64);
+
     int L[32];
     int R[32];
 
@@ -126,6 +124,11 @@ string getCipherText(int block[], int key[])
         L[i] = block[i];
         R[i] = block[32 + i];
     }
+
+    cout << "L and R block before iteration" << endl;
+    printBlock(L, 32);
+    printBlock(R, 32);
+    cout << endl;
     //start of iteration
     for (int m = 0; m < 16; m++)
     {
@@ -165,7 +168,7 @@ string getCipherText(int block[], int key[])
             initial_key[28 + i] = KR[i];
         }
 
-        keys.push_back(initial_key) ;
+        keys.push_back(initial_key);
 
         int *key_round = new int[48];
 
@@ -207,6 +210,11 @@ string getCipherText(int block[], int key[])
             L[i] = R[i];
             R[i] = final_result[i];
         }
+
+        cout << "L and R block in iteration" << endl;
+        printBlock(L, 32);
+        printBlock(R, 32);
+        cout << endl;
     }
 
     for (int i = 0; i < 32; i++)
@@ -215,26 +223,26 @@ string getCipherText(int block[], int key[])
         block[32 + i] = L[i];
     }
 
-    for (int i = 0; i < 64; i++)
+    cout << "Block after swap" << endl;
+    printBlock(block, 64);
+
+    /*for (int i = 0; i < 64; i++)
     {
         block[i] = block[PI_1[i] - 1];
     }
 
-    string output;
-    for (int i = 0; i < 8; ++i)
-    {
-        int c = 0;
-        for (int j = i * 8; j < (i + 1) * 8; ++j)
-        {
-            c = c << 1;
-            c += block[j];
-        }
-        output += ((char)c) ;
-    }
-    return output;
+    cout << "Block after inverse permutation and final encpytion output: " << endl;
+    printBlock(block, 64);*/
+
+    return block;
 }
 
-string getPlainText(int block[], vector<int *> all_keys){
+string getPlainText(int block[], vector<int *> all_keys)
+{
+    cout << "In decryption" << endl;
+    cout << endl;
+    cout << "Block after initial permutation" << endl;
+    printBlock(block, 64);
     int L[32];
     int R[32];
 
@@ -244,7 +252,13 @@ string getPlainText(int block[], vector<int *> all_keys){
         R[i] = block[32 + i];
     }
 
-    for(int m=15;m>=0;m--){
+    cout << "L and R block before iteration" << endl;
+    printBlock(L, 32);
+    printBlock(R, 32);
+    cout << endl;
+
+    for (int m = 15; m >= 0; m--)
+    {
         int *key_round = new int[48];
 
         for (int i = 0; i < 48; i++)
@@ -285,6 +299,11 @@ string getPlainText(int block[], vector<int *> all_keys){
             L[i] = R[i];
             R[i] = final_result[i];
         }
+
+        cout << "L and R block in iteration" << endl;
+        printBlock(L, 32);
+        printBlock(R, 32);
+        cout << endl;
     }
 
     for (int i = 0; i < 32; i++)
@@ -293,28 +312,23 @@ string getPlainText(int block[], vector<int *> all_keys){
         block[32 + i] = L[i];
     }
 
-    for (int i = 0; i < 64; i++)
+    cout << "Block after swap" << endl;
+    printBlock(block, 64);
+
+    /*for (int i = 0; i < 64; i++)
     {
         block[i] = block[PI_1[i] - 1];
     }
 
-    string output;
-    for (int i = 0; i < 8; ++i)
-    {
-        int c = 0;
-        for (int j = i * 8; j < (i + 1) * 8; ++j)
-        {
-            c = c << 1;
-            c += block[j];
-        }
-        output += ((char)c) ;
-    }
-    return output;
+    cout << "Block after inverse permutation and final decryption output: " << endl;
+    printBlock(block, 64);*/
+
+    return "";
 }
 
 int main()
 {
-
+    freopen("out.txt", "w", stdout);
     string plaintext;
     string key;
     getline(cin, plaintext);
@@ -330,29 +344,25 @@ int main()
     {
         blocks[i] = new int[64];
     }
-    string cipher_text;
-    for (int i = 0; i < number_of_blocks; i++)
+    int *cipher_text;
+    for (int i = 0; i < 1; i++)
     {
-        blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
-        cipher_text += getCipherText(blocks[i], keyBlock);
+        //blocks[i] = generateBlock(plaintext.substr(i * 8, 8), PI, 64);
+        cout << endl;
+        blocks[i] = generateBitForm(plaintext.substr(i * 8, 8)) ;
+        cipher_text = getCipherText(blocks[i], keyBlock);
     }
 
-    cout<<cipher_text.length()<<endl ;
-    for(int i=0;i<cipher_text.length();i++){
-        printf("%d ",cipher_text[i]) ;
-    }
-    cout<<endl ;
-
-    string d_plaintext;
-    for (int i = 0; i < number_of_blocks; i++)
+    /*int *final_out = new int[64];
+    for (int i = 0; i < 64; i++)
     {
-        blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
-        d_plaintext += getPlainText(blocks[i], keys);
-    }
+        final_out[i] = cipher_text[PI[i] - 1];
+    }*/
 
-    cout<<endl ;
-    for(int i=0;i<d_plaintext.length();i++){
-        printf("%d ",d_plaintext[i]) ;
+    for (int i = 0; i < 1; i++)
+    {
+        //blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
+        getPlainText(cipher_text, keys);
     }
 
     return 0;

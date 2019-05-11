@@ -207,6 +207,10 @@ string getCipherText(int block[], int key[])
             L[i] = R[i];
             R[i] = final_result[i];
         }
+
+        printBlock(L,32) ;
+        printBlock(R,32) ;
+        cout<<endl ;
     }
 
     for (int i = 0; i < 32; i++)
@@ -285,6 +289,10 @@ string getPlainText(int block[], vector<int *> all_keys){
             L[i] = R[i];
             R[i] = final_result[i];
         }
+
+        printBlock(L,32) ;
+        printBlock(R,32) ;
+        cout<<endl ;
     }
 
     for (int i = 0; i < 32; i++)
@@ -314,7 +322,7 @@ string getPlainText(int block[], vector<int *> all_keys){
 
 int main()
 {
-
+    freopen("out.txt","w",stdout) ;
     string plaintext;
     string key;
     getline(cin, plaintext);
@@ -337,22 +345,11 @@ int main()
         cipher_text += getCipherText(blocks[i], keyBlock);
     }
 
-    cout<<cipher_text.length()<<endl ;
-    for(int i=0;i<cipher_text.length();i++){
-        printf("%d ",cipher_text[i]) ;
-    }
-    cout<<endl ;
-
     string d_plaintext;
     for (int i = 0; i < number_of_blocks; i++)
     {
         blocks[i] = generateBlock(cipher_text.substr(i * 8, 8), PI, 64);
         d_plaintext += getPlainText(blocks[i], keys);
-    }
-
-    cout<<endl ;
-    for(int i=0;i<d_plaintext.length();i++){
-        printf("%d ",d_plaintext[i]) ;
     }
 
     return 0;
