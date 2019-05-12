@@ -186,12 +186,12 @@ int main()
     }
 
     //guessing after the initial output
-    final_map['w'-'a'] = 'W' ;
+    /*final_map['w'-'a'] = 'W' ;
     plaintext = getReplaced(plaintext,'W','w') ;
     final_map['f'-'a'] = 'J' ;
     plaintext = getReplaced(plaintext,'J','f') ;
     final_map['j'-'a'] = 'V' ;
-    plaintext = getReplaced(plaintext,'V','j') ;
+    plaintext = getReplaced(plaintext,'V','j') ;*/
 
     cout<<"Cipertext to Plaintext:\n"<<endl ;
     cout<<plaintext<<endl ;

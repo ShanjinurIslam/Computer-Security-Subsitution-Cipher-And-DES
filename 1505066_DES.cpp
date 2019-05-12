@@ -327,8 +327,6 @@ int main()
     }
 
     cout<<c_text<<endl ;
-    cout << "╔" << endl;
-
 
     int *plain[number_of_blocks]; 
     string text ;
